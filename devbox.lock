@@ -49,6 +49,54 @@
         }
       }
     },
+    "rust-analyzer@latest": {
+      "last_modified": "2024-11-18T00:41:09Z",
+      "resolved": "github:NixOS/nixpkgs/5083ec887760adfe12af64830a66807423a859a7#rust-analyzer",
+      "source": "devbox-search",
+      "version": "2024-11-11",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/fgb9zwaizy746yxg8z8pwngazd26884p-rust-analyzer-2024-11-11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/fgb9zwaizy746yxg8z8pwngazd26884p-rust-analyzer-2024-11-11"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/wp2bga112wdwpq1g23p7g202587waisd-rust-analyzer-2024-11-11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/wp2bga112wdwpq1g23p7g202587waisd-rust-analyzer-2024-11-11"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/3krh6r8p22ggyc86dgbddwvm6fgn2jvc-rust-analyzer-2024-11-11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/3krh6r8p22ggyc86dgbddwvm6fgn2jvc-rust-analyzer-2024-11-11"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/8ky932dblp2vb2khjyhb92xwsy4ah859-rust-analyzer-2024-11-11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/8ky932dblp2vb2khjyhb92xwsy4ah859-rust-analyzer-2024-11-11"
+        }
+      }
+    },
     "rustc@latest": {
       "last_modified": "2024-11-16T04:25:12Z",
       "plugin_version": "0.0.1",

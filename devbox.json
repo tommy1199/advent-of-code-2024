@@ -3,7 +3,8 @@
   "packages": [
     "rustc@latest",
     "cargo@latest",
-    "rustfmt@latest"
+    "rustfmt@latest",
+    "rust-analyzer@latest"
   ],
   "shell": {
     "init_hook": [
