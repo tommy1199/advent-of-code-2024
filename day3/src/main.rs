@@ -18,6 +18,8 @@ fn calc_product_sum(input: &str) -> i64 {
 }
 
 fn calc_product_sum_conditionally(input: &str) -> i64 {
-    let inactive_regex = Regex::new(r"don't\(\)(.|\r|\n)+?($|do\(\))").unwrap();
-    calc_product_sum(&inactive_regex.replace_all(&input, ""))
+    Regex::new(r"don't\(\)(.|\r|\n)+?($|do\(\))").unwrap()
+                                                 .split(input)
+                                                 .map(|active| calc_product_sum(active))
+                                                 .sum()
 }
