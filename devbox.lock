@@ -133,6 +133,54 @@
           "store_path": "/nix/store/xjndavbjpgzkabvnrl8xl6h51pksymfy-rustc-wrapper-1.82.0"
         }
       }
+    },
+    "rustfmt@latest": {
+      "last_modified": "2024-11-16T04:25:12Z",
+      "resolved": "github:NixOS/nixpkgs/34a626458d686f1b58139620a8b2793e9e123bba#rustfmt",
+      "source": "devbox-search",
+      "version": "1.82.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/n5sqhkr9qyz0qgp9prkmjm5yzjaa5rai-rustfmt-1.82.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/n5sqhkr9qyz0qgp9prkmjm5yzjaa5rai-rustfmt-1.82.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/yx1l5i7vpb119a7v0xhsyjbc49k50y6h-rustfmt-1.82.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/yx1l5i7vpb119a7v0xhsyjbc49k50y6h-rustfmt-1.82.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/w7qsx268h9pil86jzfsv5jv3nb6a81h4-rustfmt-1.82.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/w7qsx268h9pil86jzfsv5jv3nb6a81h4-rustfmt-1.82.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/w1vygqqg4bj4rzlm6fkj61bx0p1jc2zj-rustfmt-1.82.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/w1vygqqg4bj4rzlm6fkj61bx0p1jc2zj-rustfmt-1.82.0"
+        }
+      }
     }
   }
 }
