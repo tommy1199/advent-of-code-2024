@@ -12,7 +12,8 @@ fn main() {
 fn calc_product_sum(input: &str) -> i64 {
     let mul_regex = Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)").unwrap();
     mul_regex.captures_iter(input).map(|c| c.extract())
-                              .map(|(_, [a, b])| i64::from_str(a).unwrap() * i64::from_str(b).unwrap())
+                              .map(|(_, [a, b])| [i64::from_str(a).unwrap(), i64::from_str(b).unwrap()])
+                              .map(|[a, b]| a * b)
                               .sum()
 }
 
