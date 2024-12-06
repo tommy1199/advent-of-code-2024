@@ -2,19 +2,14 @@ use std::fs;
 
 use itertools::Itertools;
 
-#[derive(PartialEq)]
-enum Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-}
+#[derive(Eq, Clone, Hash, PartialEq, Debug)]
+struct Pos(i32, i32);
 
-#[derive(Eq, Clone, Hash, PartialEq)]
-struct Pos(u32, u32);
+#[derive(Debug, Clone, PartialEq)]
+struct Direction(i8, i8);
 
 struct Map {
-    obstactles: Vec<Pos>,
+    obstacles: Vec<Pos>,
     width: u32,
     height: u32,
 }
@@ -22,163 +17,95 @@ struct Map {
 fn main() {
     let input = fs::read_to_string("input.txt").expect("read file works");
 
+    let obstacles = extract_obstacles(&input);
+    let map = Map {
+        obstacles,
+        width: input.lines().next().unwrap().len() as u32,
+        height: input.lines().count() as u32,
+    };
+
+    let start_pos = extract_start_pos(&input);
+
+    println!("part1: {} ", get_path(&start_pos, &map).iter().count());
+    println!("part2: {} ", get_loops_count(&start_pos, &map));
+}
+
+fn extract_start_pos(input: &str) -> Pos {
+    input
+        .lines()
+        .enumerate()
+        .filter(|(_, line)| line.contains('^'))
+        .map(|(y, line)| Pos(line.find('^').unwrap() as i32, y as i32))
+        .next()
+        .unwrap()
+}
+
+fn extract_obstacles(input: &str) -> Vec<Pos> {
     let obstacles: Vec<Pos> = input
         .lines()
         .enumerate()
         .filter(|(_, line)| line.contains('#'))
         .flat_map(|(y, line)| {
             line.match_indices('#')
-                .map(move |(x, _)| Pos(x as u32, y as u32))
+                .map(move |(x, _)| Pos(x as i32, y as i32))
         })
         .collect();
-    let map = Map {
-        obstactles: obstacles,
-        width: input.lines().next().unwrap().len() as u32,
-        height: input.lines().count() as u32,
-    };
-
-    let guard_pos = input
-        .lines()
-        .enumerate()
-        .filter(|(_, line)| line.contains('^'))
-        .map(|(y, line)| Pos(line.find('^').unwrap() as u32, y as u32))
-        .next()
-        .unwrap();
-
-    println!(
-        "part1: {} ",
-        calculate_path(&guard_pos, &Direction::UP, &map)
-            .into_iter()
-            .unique()
-            .collect::<Vec<_>>()
-            .iter()
-            .count()
-    );
-    println!("part2: {} ", find_loops(guard_pos, Direction::UP, map));
+    obstacles
 }
 
-fn find_loops(guard_pos: Pos, direction: Direction, map: Map) -> u32 {
-    let mut result = 0u32;
-    let path = calculate_path(&guard_pos, &direction, &map)
-        .into_iter()
-        .unique()
-        .collect::<Vec<Pos>>();
+fn turn_right(direction: &Direction) -> Direction {
+    Direction(-direction.1, direction.0)
+}
+
+fn get_path(start_pos: &Pos, map: &Map) -> Vec<Pos> {
+    let mut path = vec![];
+    let mut direction = Direction(0, -1);
+    let mut pos = start_pos.clone();
+    while (0..map.width).contains(&(pos.0 as u32)) && (0..map.height).contains(&(pos.1 as u32)) {
+        path.push(pos.clone());
+        let new_pos = Pos(pos.0 + direction.0 as i32, pos.1 + direction.1 as i32);
+        if !map.obstacles.contains(&new_pos) {
+            pos = new_pos;
+        } else {
+            direction = turn_right(&direction);
+        }
+    }
+    path.into_iter().unique().collect::<Vec<Pos>>()
+}
+
+fn get_loops_count(start_pos: &Pos, map: &Map) -> u32 {
+    let mut count = 0u32;
+    let path = get_path(start_pos, map);
     for pos in path {
-        if is_loop(
-            &guard_pos,
-            &direction,
-            Map {
-                obstactles: [map.obstactles.clone(), vec![pos.clone()]].concat(),
+        if is_looping(
+            start_pos,
+            &Map {
                 width: map.width,
                 height: map.height,
+                obstacles: [map.obstacles.clone(), vec![pos]].concat(),
             },
-            vec![],
         ) {
-            result += 1;
+            count += 1;
         }
     }
-    result
+    count
 }
 
-fn is_loop<'a>(
-    guard_pos: &'a Pos,
-    direction: &'a Direction,
-    map: Map,
-    mut positions: Vec<(&'a Pos, &'a Direction)>,
-) -> bool {
-    if (guard_pos.0 == 0 && direction == &Direction::LEFT)
-        || (guard_pos.0 == map.width - 1 && direction == &Direction::RIGHT)
-        || (guard_pos.1 == 0 && direction == &Direction::UP)
-        || (guard_pos.1 == map.height - 1 && direction == &Direction::DOWN)
-    {
-        return false;
-    }
-    if positions.contains(&(guard_pos, direction)) {
-        return true;
-    }
-    positions.push((guard_pos, direction));
-    match direction {
-        Direction::UP => {
-            let new_pos = Pos(guard_pos.0, guard_pos.1 - 1);
-            if map.obstactles.contains(&new_pos) {
-                is_loop(guard_pos, &Direction::RIGHT, map, positions)
-            } else {
-                is_loop(&new_pos, direction, map, positions)
-            }
+fn is_looping(start_pos: &Pos, map: &Map) -> bool {
+    let mut visited = vec![];
+    let mut direction = Direction(0, -1);
+    let mut pos = start_pos.clone();
+    while (0..map.width).contains(&(pos.0 as u32)) && (0..map.height).contains(&(pos.1 as u32)) {
+        if visited.contains(&(pos.clone(), direction.clone())) {
+            return true;
         }
-        Direction::DOWN => {
-            let new_pos = Pos(guard_pos.0, guard_pos.1 + 1);
-            if map.obstactles.contains(&new_pos) {
-                is_loop(guard_pos, &Direction::LEFT, map, positions)
-            } else {
-                is_loop(&new_pos, direction, map, positions)
-            }
-        }
-        Direction::LEFT => {
-            let new_pos = Pos(guard_pos.0 - 1, guard_pos.1);
-            if map.obstactles.contains(&new_pos) {
-                is_loop(guard_pos, &Direction::UP, map, positions)
-            } else {
-                is_loop(&new_pos, direction, map, positions)
-            }
-        }
-        Direction::RIGHT => {
-            let new_pos = Pos(guard_pos.0 + 1, guard_pos.1);
-            if map.obstactles.contains(&new_pos) {
-                is_loop(guard_pos, &Direction::DOWN, map, positions)
-            } else {
-                is_loop(&new_pos, direction, map, positions)
-            }
+        visited.push((pos.clone(), direction.clone()));
+        let new_pos = Pos(pos.0 + direction.0 as i32, pos.1 + direction.1 as i32);
+        if !map.obstacles.contains(&new_pos) {
+            pos = new_pos;
+        } else {
+            direction = turn_right(&direction);
         }
     }
-}
-
-fn calculate_path(guard_pos: &Pos, direction: &Direction, map: &Map) -> Vec<Pos> {
-    let path = vec![guard_pos.clone()];
-    match direction {
-        Direction::UP => {
-            if guard_pos.1 == 0 {
-                return path;
-            }
-            let new_pos = Pos(guard_pos.0, guard_pos.1 - 1);
-            if map.obstactles.contains(&new_pos) {
-                return calculate_path(guard_pos, &Direction::RIGHT, map);
-            } else {
-                return [path, calculate_path(&new_pos, direction, map)].concat();
-            }
-        }
-        Direction::DOWN => {
-            if guard_pos.1 == map.height - 1 {
-                return path;
-            }
-            let new_pos = Pos(guard_pos.0, guard_pos.1 + 1);
-            if map.obstactles.contains(&new_pos) {
-                return calculate_path(guard_pos, &Direction::LEFT, map);
-            } else {
-                return [path, calculate_path(&new_pos, direction, map)].concat();
-            }
-        }
-        Direction::LEFT => {
-            if guard_pos.0 == 0 {
-                return path;
-            }
-            let new_pos = Pos(guard_pos.0 - 1, guard_pos.1);
-            if map.obstactles.contains(&new_pos) {
-                return calculate_path(guard_pos, &Direction::UP, map);
-            } else {
-                return [path, calculate_path(&new_pos, direction, map)].concat();
-            }
-        }
-        Direction::RIGHT => {
-            if guard_pos.0 == map.width - 1 {
-                return path;
-            }
-            let new_pos = Pos(guard_pos.0 + 1, guard_pos.1);
-            if map.obstactles.contains(&new_pos) {
-                return calculate_path(guard_pos, &Direction::DOWN, map);
-            } else {
-                return [path, calculate_path(&new_pos, direction, map)].concat();
-            }
-        }
-    }
+    false
 }
