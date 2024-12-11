@@ -1,14 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.6/.schema/devbox.schema.json",
   "packages": [
-    "rustc@latest",
-    "cargo@latest",
-    "rustfmt@latest",
-    "rust-analyzer@latest"
+    "libiconv@latest",
+    "rustup@latest"
   ],
   "shell": {
     "init_hook": [
-      "echo 'Welcome to devbox!' > /dev/null"
+      "rustup update stable",
+      "rustup component add rust-analyzer"
     ],
     "scripts": {
       "test": [
