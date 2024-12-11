@@ -4,7 +4,10 @@
     "rustc@latest",
     "cargo@latest",
     "rustfmt@latest",
-    "rust-analyzer@latest"
+    "rust-analyzer@latest",
+    "cc@latest",
+    "gcc@latest",
+    "libiconv@latest"
   ],
   "shell": {
     "init_hook": [
